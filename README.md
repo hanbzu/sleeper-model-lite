@@ -1,16 +1,53 @@
 ```markdown
-# Sankey Diagram Solver - Specification
-
-## Overview
+# Sankey Diagram Solver
 
 A CLI tool that ingests YAML-defined Sankey diagrams with constraints and determines if the system is solvable. If solvable, outputs all flow values.
 
+## Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Run solver on example
+node sankey-solver.js example.yaml
+
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+## Overview
+
+The solver uses an iterative constraint satisfaction algorithm to determine flow values in Sankey diagrams.
+
 ## How It Works
 
-The tool uses an iterative constraint satisfaction algorithm:
 1. User defines topology (nodes and flows) and constraints (equations)
 2. System automatically enforces flow balance at each node
 3. Solver iteratively determines flow values until all flows are defined or no progress can be made
+
+## Testing
+
+This project has comprehensive test coverage using **Vitest**.
+
+- **140 tests** across 5 test files
+- Unit tests for all modules
+- Integration tests for end-to-end scenarios
+- Fast execution with Vite
+
+See [TESTING.md](TESTING.md) for detailed testing documentation.
+
+### Running Tests
+
+```bash
+npm test              # Watch mode
+npm run test:run      # Single run
+npm run test:ui       # Interactive UI
+npm run test:coverage # Coverage report
+```
 
 ## YAML Schema
 
@@ -201,6 +238,32 @@ constraints:
 - `s1_s2 = 900` (balance at stage1)
 - `s2_a = 540` (constraint)
 - `s2_b = 360` (balance at stage2)
+
+## Project Structure
+
+The codebase is modularized for testability and maintainability:
+
+```
+nightmodel/
+├── sankey-solver.js       # CLI entry point
+├── src/
+│   ├── solver.js          # Main solving logic
+│   ├── expressions.js     # Expression evaluation
+│   ├── balance.js         # Node balance solving
+│   ├── verification.js    # Solution verification
+│   ├── formatter.js       # Output formatting
+│   └── *.test.js          # Vitest test files
+├── vite.config.js         # Vite/Vitest configuration
+└── example.yaml           # Example Sankey diagram
+```
+
+See [REFACTORING.md](REFACTORING.md) for details on the modular architecture.
+
+## Documentation
+
+- [TESTING.md](TESTING.md) - Comprehensive testing guide
+- [REFACTORING.md](REFACTORING.md) - Architecture and refactoring details
+- [src/README.md](src/README.md) - Module-level documentation
 
 ## Notes
 

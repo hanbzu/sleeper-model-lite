@@ -18,8 +18,11 @@ nightmodel/
     ├── verification.js       # Solution verification (83 lines)
     ├── formatter.js          # Output formatting (99 lines)
     ├── solver.js             # Main solver orchestration (99 lines)
-    ├── expressions.test.example.js  # Example tests for expressions
-    └── balance.test.example.js      # Example tests for balance logic
+    ├── expressions.test.js   # Vitest tests for expressions (28 tests)
+    ├── balance.test.js       # Vitest tests for balance logic (35 tests)
+    ├── verification.test.js  # Vitest tests for verification (30 tests)
+    ├── formatter.test.js     # Vitest tests for formatter (26 tests)
+    └── solver.test.js        # Integration tests (21 tests)
 ```
 
 ### Module Breakdown
@@ -122,32 +125,69 @@ nightmodel/
 - Example usage in test files
 - Clear interface definitions
 
-## Testing Strategy
+## Testing with Vitest
 
-### Unit Testing
-Each module can be tested in isolation:
+### Test Framework Setup
+The project uses **Vite** and **Vitest** for modern, fast testing:
+
+- **Vite** - Build tool providing fast test execution
+- **Vitest** - Native ESM test runner with Jest-compatible API
+- **140 total tests** across 5 test files
+
+### Running Tests
+
+```bash
+# Run tests in watch mode (recommended for development)
+npm test
+
+# Run tests once
+npm run test:run
+
+# Run tests with interactive UI
+npm run test:ui
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Test Coverage
+
+All modules have comprehensive test coverage:
+
+- `expressions.test.js` - 28 tests for expression evaluation
+- `balance.test.js` - 35 tests for node balance solving
+- `verification.test.js` - 30 tests for solution verification
+- `formatter.test.js` - 26 tests for output formatting
+- `solver.test.js` - 21 integration tests
+
+### Test Structure
+
+Tests use Vitest's describe/it/expect API:
 
 ```javascript
-// Test expressions module
+import { describe, it, expect } from 'vitest';
 import { evaluateExpression } from './src/expressions.js';
-const result = evaluateExpression('parameters.x + 10', { x: 5 }, {});
-assert(result === 15);
+
+describe('evaluateExpression', () => {
+    it('should evaluate simple parameter substitution', () => {
+        const result = evaluateExpression('parameters.x + 10', { x: 5 }, {});
+        expect(result).toBe(15);
+    });
+});
 ```
 
 ### Integration Testing
-Test the complete solving process:
+Complete system tests verify end-to-end functionality:
 
 ```javascript
 import { solve } from './src/solver.js';
-const result = solve(config);
-assert(result.success);
+
+it('should solve branching network', () => {
+    const result = solve(config);
+    expect(result.success).toBe(true);
+    expect(result.flows.src_split).toBe(1000);
+});
 ```
-
-### Example Tests Provided
-- `src/expressions.test.example.js` - 233 lines of expression tests
-- `src/balance.test.example.js` - 317 lines of balance logic tests
-
-Run with: `node src/expressions.test.example.js`
 
 ## Backward Compatibility
 
@@ -181,6 +221,27 @@ import { solveNodeBalance } from './src/balance.js';
 import { verifyBalance } from './src/verification.js';
 ```
 
+## Development Tools
+
+### Vite Configuration
+
+The project includes a `vite.config.js` with:
+- Node environment for testing
+- Global test utilities
+- Coverage reporting (v8 provider)
+- Automatic test file detection
+
+### Package Scripts
+
+```json
+{
+  "test": "vitest",              // Watch mode
+  "test:ui": "vitest --ui",      // Interactive UI
+  "test:run": "vitest run",      // Single run
+  "test:coverage": "vitest run --coverage"  // With coverage
+}
+```
+
 ## Future Improvements
 
 With this modular structure, the following improvements are now easier:
@@ -190,7 +251,7 @@ With this modular structure, the following improvements are now easier:
 3. **Performance Optimization** - Profile and optimize individual modules
 4. **Alternative Solvers** - Implement different solving strategies (e.g., linear programming)
 5. **Type Safety** - Add TypeScript definitions for better type checking
-6. **Test Coverage** - Add comprehensive test suites using Jest/Mocha
+6. ~~**Test Coverage**~~ - ✅ **COMPLETE** - Comprehensive test suite with Vitest (140 tests)
 7. **Web Interface** - Reuse solver modules in a web UI without CLI dependencies
 
 ## Verification
@@ -198,9 +259,10 @@ With this modular structure, the following improvements are now easier:
 All original functionality has been verified:
 - ✅ CLI works with example.yaml
 - ✅ Produces identical output
-- ✅ Example tests pass
+- ✅ All 140 Vitest tests pass
 - ✅ Public API unchanged
 - ✅ No breaking changes
+- ✅ Comprehensive test coverage
 
 ## Metrics
 
@@ -211,8 +273,9 @@ All original functionality has been verified:
 | Largest module | 370 lines | 138 lines | -63% |
 | Documentation | Inline comments | JSDoc + README | Improved |
 | Testability | Difficult | Easy | Much better |
-| Test examples | 0 | 2 files (550 lines) | Added |
+| Test files | 0 | 5 files (140 tests) | Added |
+| Test framework | None | Vitest + Vite | Added |
 
 ## Summary
 
-This refactoring transforms a single-file script into a well-organized, modular codebase that is easier to test, maintain, and extend. The changes are non-breaking and provide a solid foundation for future development.
+This refactoring transforms a single-file script into a well-organized, modular codebase with comprehensive test coverage. The project now uses modern development tools (Vite/Vitest) and has 140 tests ensuring reliability. All changes are non-breaking and provide a solid foundation for future development.

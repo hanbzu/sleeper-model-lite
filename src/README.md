@@ -2,6 +2,53 @@
 
 This directory contains the modular components of the Sankey flow solver.
 
+## Testing
+
+This project uses **Vitest** for testing. All modules have comprehensive test coverage.
+
+### Running Tests
+
+```bash
+# Run tests in watch mode
+npm test
+
+# Run tests once
+npm run test:run
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Test Files
+
+Each module has a corresponding test file:
+- `expressions.test.js` - Expression evaluation tests (28 tests)
+- `balance.test.js` - Node balance solving tests (35 tests)
+- `verification.test.js` - Solution verification tests (30 tests)
+- `formatter.test.js` - Output formatting tests (26 tests)
+- `solver.test.js` - Integration tests (21 tests)
+
+**Total: 140 tests**
+
+### Test Structure
+
+Tests are organized using Vitest's `describe` and `it` blocks:
+
+```javascript
+import { describe, it, expect } from 'vitest';
+import { evaluateExpression } from './expressions.js';
+
+describe('evaluateExpression', () => {
+    it('should evaluate simple parameter substitution', () => {
+        const result = evaluateExpression('parameters.x + 10', { x: 5 }, {});
+        expect(result).toBe(15);
+    });
+});
+```
+
 ## Module Structure
 
 ### `solver.js` - Main Solver
@@ -103,15 +150,25 @@ const output = formatResult(solveResult);
 console.log(output);
 ```
 
-## Testing Strategy
+## Testing Coverage
 
-Each module can be tested independently:
+All modules have comprehensive test coverage:
 
-1. **expressions.js** - Test expression parsing and evaluation with various parameter/flow combinations
-2. **balance.js** - Test node balance solving with different graph topologies
-3. **verification.js** - Test balance verification with valid and invalid solutions
-4. **formatter.js** - Test output formatting for all result types
+1. **expressions.js** - Expression parsing and evaluation with various parameter/flow combinations
+2. **balance.js** - Node balance solving with different graph topologies (including edge cases)
+3. **verification.js** - Balance verification with valid and invalid solutions
+4. **formatter.js** - Output formatting for all result types
 5. **solver.js** - Integration tests with complete system configurations
+
+### Adding New Tests
+
+When adding new functionality:
+
+1. Create or update the corresponding `.test.js` file
+2. Use descriptive test names with `it('should...')`
+3. Group related tests with `describe()`
+4. Test both success and error cases
+5. Run `npm run test:coverage` to verify coverage
 
 ## Design Principles
 
@@ -132,3 +189,39 @@ solver.js
 
 formatter.js (independent, no dependencies)
 ```
+
+## Development Setup
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+```bash
+npm install
+```
+
+### Development Tools
+
+- **Vite** - Build tool and dev server
+- **Vitest** - Testing framework (configured in `vite.config.js`)
+
+### Vite Configuration
+
+The project includes a `vite.config.js` with:
+- Node environment for testing
+- Global test utilities
+- Coverage reporting (v8 provider)
+- Test file exclusions
+
+### Running in Watch Mode
+
+For TDD (Test-Driven Development), run tests in watch mode:
+
+```bash
+npm test
+```
+
+This will automatically re-run tests when files change.

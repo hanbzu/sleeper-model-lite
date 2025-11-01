@@ -15,17 +15,17 @@ export const evaluateExpression = (expr, parameters, definedFlows) => {
 
     // Replace parameters.xxx with actual values
     evaluated = evaluated.replace(/parameters\.(\w+)/g, (match, paramName) => {
-        if (parameters[paramName] === undefined) {
+        if (parameters[paramName] === undefined)
             throw new Error(`Unknown parameter: ${paramName}`);
-        }
+
         return parameters[paramName];
     });
 
     // Replace flows.xxx with actual values
     evaluated = evaluated.replace(/flows\.(\w+)/g, (match, flowId) => {
-        if (definedFlows[flowId] === undefined) {
+        if (definedFlows[flowId] === undefined)
             throw new Error(`Flow ${flowId} not yet defined`);
-        }
+
         return definedFlows[flowId];
     });
 
