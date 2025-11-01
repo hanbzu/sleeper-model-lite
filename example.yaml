@@ -1,46 +1,72 @@
 # Named parameters referenced in constraints
 parameters:
-    total_energy: 1000
-    residential_demand: 400
-    loss_rate: 0.15
+    distance: 1380
+    coaches: 10
+    cost_per_km: 28
+    cost_per_coach: 1000
+    rdc_margin: 0.1
+    seats: 350
+    occupancy: 0.7
+    avg_ticket_price: 137.38
+    subsidy_train: 32200
 
 # Graph nodes
 nodes:
-    - id: source
-      label: "Power Plant"
-    - id: transmission
-      label: "Transmission Lines"
-    - id: residential
-      label: "Residential"
-    - id: industrial
-      label: "Industrial"
-    - id: losses
-      label: "Losses"
+    - id: tickets
+      label: "Tickets revenue"
+    - id: subsidy
+      label: "Subsidy"
+    - id: revenue
+      label: "Revenue"
+    - id: sbb_profit
+      label: "SBB profit"
+    - id: cost
+      label: "Cost"
+    - id: rdc_profit
+      label: "RDC profit"
+    - id: per_km_costs
+      label: "Per km costs"
+    - id: fixed_costs
+      label: "Fixed costs"
 
 # Directed flows between nodes
 flows:
-    - id: src_trans
-      from: source
-      to: transmission
-      label: "Generated Power"
-    - id: trans_res
-      from: transmission
-      to: residential
-      label: "To Homes"
-    - id: trans_ind
-      from: transmission
-      to: industrial
-      label: "To Industry"
-    - id: trans_loss
-      from: transmission
-      to: losses
-      label: "Line Losses"
+    - id: tickets
+      from: tickets
+      to: revenue
+      label: "Tickets sold"
+    - id: subsidy
+      from: subsidy
+      to: revenue
+      label: "Subsidy"
+    - id: sbb_profit
+      from: revenue
+      to: sbb_profit
+      label: "SBB profit"
+    - id: cost
+      from: revenue
+      to: cost
+      label: "Net cost"
+    - id: rdc_profit
+      from: cost
+      to: rdc_profit
+      label: "RDC profit"
+    - id: per_km_costs
+      from: cost
+      to: per_km_costs
+      label: "Per km costs"
+    - id: fixed_costs
+      from: cost
+      to: fixed_costs
+      label: "Fixed costs"
 
 # Equations defining flow values
 # Operators: +, -, *, /, ==
 # References: flows.<id>, parameters.<name>
 constraints:
-    - "flows.src_trans == parameters.total_energy"
-    - "flows.trans_res == parameters.residential_demand"
-    - "flows.trans_loss == flows.src_trans * parameters.loss_rate"
-    # flows.trans_ind will be solved via balance constraint
+    - "flows.tickets == parameters.avg_ticket_price * parameters.seats * parameters.occupancy"
+    - "flows.subsidy == parameters.subsidy_train"
+    - "flows.rdc_profit == 4900"
+    #- "flows.rdc_profit == (flows.per_km_costs + flows.fixed_costs) * 0.1"
+    - "flows.per_km_costs == parameters.distance * parameters.cost_per_km"
+    - "flows.fixed_costs == parameters.cost_per_coach * parameters.coaches"

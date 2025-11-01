@@ -1,0 +1,46 @@
+# Named parameters referenced in constraints
+parameters:
+    total_energy: 1000
+    residential_demand: 400
+    loss_rate: 0.15
+
+# Graph nodes
+nodes:
+    - id: source
+      label: "Power Plant"
+    - id: transmission
+      label: "Transmission Lines"
+    - id: residential
+      label: "Residential"
+    - id: industrial
+      label: "Industrial"
+    - id: losses
+      label: "Losses"
+
+# Directed flows between nodes
+flows:
+    - id: src_trans
+      from: source
+      to: transmission
+      label: "Generated Power"
+    - id: trans_res
+      from: transmission
+      to: residential
+      label: "To Homes"
+    - id: trans_ind
+      from: transmission
+      to: industrial
+      label: "To Industry"
+    - id: trans_loss
+      from: transmission
+      to: losses
+      label: "Line Losses"
+
+# Equations defining flow values
+# Operators: +, -, *, /, ==
+# References: flows.<id>, parameters.<name>
+constraints:
+    - "flows.src_trans == parameters.total_energy"
+    - "flows.trans_res == parameters.residential_demand"
+    - "flows.trans_loss == flows.src_trans * parameters.loss_rate"
+    # flows.trans_ind will be solved via balance constraint
