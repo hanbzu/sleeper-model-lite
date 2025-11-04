@@ -11,13 +11,17 @@
         "predeploy": "yarn build",
         "deploy": "gh-pages -d dist",
         "watch": "nodemon --watch example.yaml --exec node cli.js example.yaml",
+        "thingie": "nodemon node src/play.js",
         "test": "vitest",
         "test:ui": "vitest --ui",
         "test:run": "vitest run",
         "test:coverage": "vitest run --coverage"
     },
     "dependencies": {
+        "@observablehq/plot": "^0.6.17",
+        "d3-sankey": "^0.12.3",
         "js-yaml": "^4.1.0",
+        "lodash": "^4.17.21",
         "react": "^19.2.0",
         "react-dom": "^19.2.0"
     },
