@@ -37,3 +37,18 @@ export function solve(obj) {
   if (nextFnKey === undefined) return _.omitBy(obj, (value) => typeof value !== 'number');
   else return solve({ ...obj, [nextFnKey]: obj[nextFnKey](obj) });
 }
+
+/** Go back to the original value format (number or func). Uses a naive contruction of an arrow function and evaluation, which may throw errors */
+export function fromString(d) {
+  return !isNaN(Number(d))
+    ? +d // converted to number
+    : eval(`(d) => ${d.replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g, 'd.$1')}`); // converted to function
+}
+
+/** Turn the value into a string for editing */
+export function toString(d) {
+  return d
+    .toString() // it could be a function, make sure we've got it in string form
+    .replace(/^\(d\)\s*=>\s*/, '') // Replace the '(d) => ' at the beginning
+    .replace(/d\./g, ''); // Replace 'd.' occurrences
+}

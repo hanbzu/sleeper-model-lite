@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import styles from './ValuesEditor.module.css';
 import TrashIcon from './assets/icons/TrashIcon';
+import { fromString, toString } from './logic';
 
 export default function ValuesEditor({ data, dataSolved = {}, onChange }) {
   const [newKey, setNewKey] = React.useState();
@@ -43,21 +44,6 @@ export default function ValuesEditor({ data, dataSolved = {}, onChange }) {
       )}
     </div>
   );
-}
-
-/** Go back to the original value format (number or func). Uses a naive contruction of an arrow function and evaluation, which may throw errors */
-function fromString(d) {
-  return !isNaN(Number(d))
-    ? +d // converted to number
-    : eval(`(d) => ${d.replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g, 'd.$1')}`); // converted to function
-}
-
-/** Turn the value into a string for editing */
-function toString(d) {
-  return d
-    .toString() // it could be a function, make sure we've got it in string form
-    .replace(/^\(d\)\s*=>\s*/, '') // Replace the '(d) => ' at the beginning
-    .replace(/d\./g, ''); // Replace 'd.' occurrences
 }
 
 function ValueEditor({ value, solvedValue, initialValue = false, onChange }) {
