@@ -1,9 +1,10 @@
 import { sankey } from 'd3-sankey';
 import { useState, useEffect, useRef } from 'react';
 import yaml from 'js-yaml';
-import { result, flows } from './logic';
+import { getAdditionalFormulasBasedOnFlows, solve } from './logic';
 import * as Plot from '@observablehq/plot';
 import _ from 'lodash';
+import SankeyPlot from './SankeyPlot.jsx';
 
 function adaptData({ values, flows }) {
   console.log('···values', values);
@@ -21,64 +22,36 @@ function adaptData({ values, flows }) {
   return { nodes, links };
 }
 
-function ObservablePlotComponent() {
-  const containerRef = useRef();
-  const height = 400;
-  const width = 800;
-
-  useEffect(() => {
-    if (containerRef.current) {
-      const sankeyData = adaptData({ values: result, flows });
-      console.log('sankeyData', sankeyData);
-
-      sankey()
-        .nodeWidth(2)
-        .nodePadding(height / sankeyData.nodes.length)
-        .size([width, height])(sankeyData);
-
-      const plot = Plot.plot({
-        marks: [
-          sankeyData.links
-            .map((l) => [
-              { x: l.source.x1, y0: l.y0 + l.width / 2, y1: l.y0 - l.width / 2 },
-              { x: l.target.x0, y0: l.y1 + l.width / 2, y1: l.y1 - l.width / 2 },
-            ])
-            .map((link) =>
-              Plot.areaY(link, {
-                x: 'x',
-                y1: 'y0',
-                y2: 'y1',
-                curve: 'bump-x',
-                fill: '#000',
-                fillOpacity: 0.1,
-                order: 'value',
-              })
-            ),
-          Plot.rect(sankeyData.nodes, { x1: 'x0', x2: 'x1', y1: 'y0', y2: 'y1', fill: 'black' }),
-          Plot.text(sankeyData.nodes, {
-            x: 'x1',
-            dx: 5,
-            y: (d) => (d.y1 + d.y0) / 2,
-            text: 'name',
-            textAnchor: 'start',
-          }),
-        ],
-        x: { axis: null },
-        y: { axis: null },
-        width: width,
-        height: height,
-        marginTop: 20,
-        marginRight: 40,
-      });
-      containerRef.current.append(plot);
-      return () => plot.remove();
-    }
-  });
-
-  return <div ref={containerRef} />;
-}
-
 function App() {
+  const values = {
+    seats: 350,
+    occupancy: 0.7,
+    avg_ticket_price: 137.38,
+    tickets: (d) => d.avg_ticket_price * d.seats * d.occupancy,
+    subsidy: 32200,
+    rdc_profit: (d) => (d.per_km_cost + d.fixed_cost) * 0.1,
+    distance: 1380,
+    per_km_cost: (d) => d.distance * 28,
+    coaches: 10,
+    fixed_cost: (d) => d.coaches * 1000,
+  };
+
+  const flows = {
+    tickets: { to: 'revenue' },
+    subsidy: { to: 'revenue' },
+    sbb_profit: { from: 'revenue' },
+    cost: { from: 'revenue', to: 'cost' },
+    rdc_profit: { from: 'cost' },
+    per_km_cost: { from: 'cost' },
+    fixed_cost: { from: 'cost' },
+  };
+
+  const sankeyData = adaptData({
+    values: solve({ ...values, ...getAdditionalFormulasBasedOnFlows({ flows, values }) }),
+    flows,
+  });
+  console.log('sankeyData', sankeyData);
+
   return (
     <div
       style={{
@@ -94,7 +67,7 @@ function App() {
       </header>
 
       <main>
-        <ObservablePlotComponent />
+        <SankeyPlot height={400} width={800} sankeyData={sankeyData} />
       </main>
     </div>
   );
