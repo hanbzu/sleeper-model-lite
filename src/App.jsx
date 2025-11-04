@@ -1,7 +1,7 @@
 import { sankey } from "d3-sankey";
 import { useState, useEffect, useRef } from "react";
 import yaml from "js-yaml";
-import { result, flows } from "../play";
+import { result, flows } from "./play";
 import * as Plot from "@observablehq/plot";
 import _ from "lodash";
 
@@ -111,7 +111,7 @@ function App() {
         >
             <header style={{ marginBottom: "2rem" }}>
                 <h1 style={{ margin: 0, fontSize: "2rem", color: "#333" }}>
-                    Nightmodel
+                    Sleeper model lite
                 </h1>
                 <p style={{ color: "#666", marginTop: "0.5rem" }}>
                     Sankey diagram solver and flow analyzer
@@ -126,14 +126,3 @@ function App() {
 }
 
 export default App;
-
-// const links = {
-//     sankey().nodeWidth(20)
-//     .nodePadding(height / sankeyData.nodes.length)
-//     .size([width, height])(sankeyData);
-
-//   return sankeyData.links.map((l) => [
-//     { x: l.source.x1, y0: l.y0 + l.width / 2, y1: l.y0 - l.width / 2 },
-//     { x: l.target.x0, y0: l.y1 + l.width / 2, y1: l.y1 - l.width / 2 }
-//   ])
-// }
