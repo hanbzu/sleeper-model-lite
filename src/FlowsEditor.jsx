@@ -55,49 +55,43 @@ export default function FlowsEditor({ data = {}, onChange }) {
 
   return (
     <div className="container">
-      <div className="header">
-        <h2>Flows Editor</h2>
+      <div className="list">
+        {flows.map(([id, flow]) => (
+          <div key={id} className={styles.flowItem}>
+            <div className={styles.flowId}>{id}</div>
+
+            <div className={styles.flowField}>
+              <select value={flow.from || ''} onChange={(e) => handleNodeChange(id, 'from', e.target.value)} className={styles.select}>
+                <option value=""></option>
+                {nodes.map((node) => (
+                  <option key={node} value={node}>
+                    {node}
+                  </option>
+                ))}
+                <option value="__ADD_NEW__">+ Add new node...</option>
+              </select>
+              <span className={styles.arrow}>→</span>
+              <select value={flow.to || ''} onChange={(e) => handleNodeChange(id, 'to', e.target.value)} className={styles.select}>
+                <option value=""></option>
+                {nodes.map((node) => (
+                  <option key={node} value={node}>
+                    {node}
+                  </option>
+                ))}
+                <option value="__ADD_NEW__">+ Add new node...</option>
+              </select>
+            </div>
+
+            <button onClick={() => handleDeleteFlow(id)} className="btn-icon" title="Delete flow">
+              <TrashIcon />
+            </button>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 15 }}>
         <button onClick={handleAddFlow} className="btn">
           Add Flow
         </button>
-      </div>
-
-      <div className="list">
-        {flows.length === 0 ? (
-          <div className="empty-state">No flows yet. Click "Add Flow" to create one.</div>
-        ) : (
-          flows.map(([id, flow]) => (
-            <div key={id} className={styles.flowItem}>
-              <div className={styles.flowId}>{id}</div>
-
-              <div className={styles.flowField}>
-                <select value={flow.from || ''} onChange={(e) => handleNodeChange(id, 'from', e.target.value)} className={styles.select}>
-                  <option value=""></option>
-                  {nodes.map((node) => (
-                    <option key={node} value={node}>
-                      {node}
-                    </option>
-                  ))}
-                  <option value="__ADD_NEW__">+ Add new node...</option>
-                </select>
-                <span className={styles.arrow}>→</span>
-                <select value={flow.to || ''} onChange={(e) => handleNodeChange(id, 'to', e.target.value)} className={styles.select}>
-                  <option value=""></option>
-                  {nodes.map((node) => (
-                    <option key={node} value={node}>
-                      {node}
-                    </option>
-                  ))}
-                  <option value="__ADD_NEW__">+ Add new node...</option>
-                </select>
-              </div>
-
-              <button onClick={() => handleDeleteFlow(id)} className="btn-icon" title="Delete flow">
-                <TrashIcon />
-              </button>
-            </div>
-          ))
-        )}
       </div>
     </div>
   );

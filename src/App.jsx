@@ -43,7 +43,7 @@ function App() {
         {error ? <span style={{ color: 'red' }}>{error}</span> : <SankeyPlot height={400} width={800} sankeyData={sankeyData} />}
         <ValuesEditor data={state.values} dataSolved={dataSolved} onChange={(values) => setState((s) => ({ ...s, values }))} />
         <FlowsEditor data={state.flows} onChange={(flows) => setState((s) => ({ ...s, flows }))} />
-        <button className="btn" onClick={() => setState(EXAMPLE_STATE)}>
+        <button style={{ marginTop: 100 }} onClick={() => setState(EXAMPLE_STATE)}>
           Load example
         </button>
       </main>
