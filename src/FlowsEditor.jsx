@@ -1,17 +1,17 @@
 import React from 'react';
 import styles from './FlowsEditor.module.css';
 import TrashIcon from './assets/icons/TrashIcon';
+import _ from 'lodash';
 
-export default function FlowsEditor({ data, onChange }) {
+export default function FlowsEditor({ data = {}, onChange }) {
   // Get all unique nodes mentioned in the flows
   const getAllNodes = () => {
-    const nodes = new Set();
-    Object.entries(data || {}).forEach(([id, flow]) => {
-      nodes.add(id);
-      if (flow.from) nodes.add(flow.from);
-      if (flow.to) nodes.add(flow.to);
-    });
-    return Array.from(nodes).sort();
+    return _.uniq(
+      Object.values(data)
+        .flatMap((flow) => [flow.from, flow.to])
+        .filter(Boolean)
+        .sort()
+    );
   };
 
   const handleAddFlow = () => {
@@ -21,10 +21,7 @@ export default function FlowsEditor({ data, onChange }) {
       alert('Flow ID already exists!');
       return;
     }
-    onChange({
-      ...data,
-      [id]: {},
-    });
+    onChange({ ...data, [id]: {} });
   };
 
   const handleDeleteFlow = (id) => {
