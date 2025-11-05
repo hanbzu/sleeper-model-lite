@@ -1,6 +1,6 @@
 .flowItem {
   display: grid;
-  grid-template-columns: 150px 1fr 30px;
+  grid-template-columns: 1fr 2fr 30px;
   gap: 10px;
   align-items: center;
   padding: 10px;
