@@ -2,7 +2,6 @@ import React from 'react';
 import _ from 'lodash';
 import styles from './ValuesEditor.module.css';
 import TrashIcon from './assets/icons/TrashIcon';
-import { fromString, toString } from './logic';
 
 export default function ValuesEditor({ data, dataSolved = {}, onChange }) {
   const [newKey, setNewKey] = React.useState();
@@ -49,11 +48,11 @@ export default function ValuesEditor({ data, dataSolved = {}, onChange }) {
 function ValueEditor({ value, solvedValue, initialValue = false, onChange }) {
   const [pendingEdits, setPendingEdits] = React.useState(initialValue ? '' : null);
   function onEdit() {
-    setPendingEdits(toString(value));
+    setPendingEdits(value);
   }
   function onSave() {
     try {
-      onChange(fromString(pendingEdits));
+      onChange(pendingEdits);
       setPendingEdits(null);
     } catch (err) {
       alert(`Error in expression:\n${err.message}`);

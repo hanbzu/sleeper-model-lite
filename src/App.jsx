@@ -1,50 +1,14 @@
 import React from 'react';
-import { getAdditionalFormulasBasedOnFlows, solve, fromString, toString } from './logic';
+import { getAdditionalFormulasBasedOnFlows, solve, fromString } from './logic';
 import _ from 'lodash';
 import SankeyPlot from './SankeyPlot.jsx';
 import ValuesEditor from './ValuesEditor.jsx';
-
-function deserializeValues(hash) {
-  try {
-    return JSON.parse(decodeURIComponent(atob(hash)));
-  } catch (e) {
-    console.error('Failed to deserialize values from URL:', e);
-    return null;
-  }
-}
+import { useUrlState } from './useUrlState';
 
 function App() {
-  // Initialize state from URL hash if available, otherwise use defaults
-  const [state, setState] = React.useState(() => {
-    const hash = window.location.hash.slice(1);
-    if (hash) {
-      const deserialized = deserializeValues(hash);
-      if (deserialized) return deserialized;
-    }
-    return DEFAULT_STATE;
-  });
+  const [state, setState] = useUrlState({ values: {}, flows: {} });
 
   console.log('···state', state);
-
-  // Sync state to URL hash when it changes
-  React.useEffect(() => {
-    const serialized = btoa(encodeURIComponent(JSON.stringify(state)));
-    window.history.replaceState(null, '', `#${serialized}`);
-  }, [state]);
-
-  // Listen for manual URL hash changes (browser back/forward, manual edit)
-  React.useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.slice(1);
-      if (hash) {
-        const deserialized = deserializeValues(hash);
-        if (deserialized) setState(deserialized);
-      }
-    };
-
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
 
   const valuesRunnable = _.mapValues(state.values, fromString); // Can throw TODO
   const dataSolved = solve({ ...valuesRunnable, ...getAdditionalFormulasBasedOnFlows(state.flows, Object.keys(valuesRunnable)) });
@@ -69,7 +33,7 @@ function App() {
       </header>
 
       <main>
-        <SankeyPlot height={400} width={800} sankeyData={sankeyData} />
+        {Object.keys(state.flows).length > 0 && <SankeyPlot height={400} width={800} sankeyData={sankeyData} />}
         <ValuesEditor data={state.values} dataSolved={dataSolved} onChange={(values) => setState((s) => ({ ...s, values }))} />
       </main>
     </div>
@@ -117,3 +81,5 @@ const DEFAULT_STATE = {
     fixed_cost: { from: 'cost' },
   },
 };
+
+// http://localhost:5173/dynasankey/#JTdCJTIydmFsdWVzJTIyJTNBJTdCJTIyc2VhdHMlMjIlM0ElMjIzNTAlMjIlMkMlMjJvY2N1cGFuY3klMjIlM0ElMjIwLjclMjIlMkMlMjJhdmdfdGlja2V0X3ByaWNlJTIyJTNBJTIyMTM3LjM4JTIyJTJDJTIydGlja2V0cyUyMiUzQSUyMmF2Z190aWNrZXRfcHJpY2UlMjAqJTIwc2VhdHMlMjAqJTIwb2NjdXBhbmN5JTIyJTJDJTIyc3Vic2lkeSUyMiUzQSUyMjMyMjAwJTIyJTJDJTIycmRjX3Byb2ZpdCUyMiUzQSUyMihwZXJfa21fY29zdCUyMCUyQiUyMGZpeGVkX2Nvc3QpJTIwKiUyMDAuMSUyMiUyQyUyMmRpc3RhbmNlJTIyJTNBJTIyMTM4MCUyMiUyQyUyMnBlcl9rbV9jb3N0JTIyJTNBJTIyZGlzdGFuY2UlMjAqJTIwMjglMjIlMkMlMjJjb2FjaGVzJTIyJTNBJTIyMTAlMjIlMkMlMjJmaXhlZF9jb3N0JTIyJTNBJTIyY29hY2hlcyUyMColMjAxZTMlMjIlN0QlMkMlMjJmbG93cyUyMiUzQSU3QiUyMnRpY2tldHMlMjIlM0ElN0IlMjJ0byUyMiUzQSUyMnJldmVudWUlMjIlN0QlMkMlMjJzdWJzaWR5JTIyJTNBJTdCJTIydG8lMjIlM0ElMjJyZXZlbnVlJTIyJTdEJTJDJTIyc2JiX3Byb2ZpdCUyMiUzQSU3QiUyMmZyb20lMjIlM0ElMjJyZXZlbnVlJTIyJTdEJTJDJTIyY29zdCUyMiUzQSU3QiUyMmZyb20lMjIlM0ElMjJyZXZlbnVlJTIyJTJDJTIydG8lMjIlM0ElMjJjb3N0JTIyJTdEJTJDJTIycmRjX3Byb2ZpdCUyMiUzQSU3QiUyMmZyb20lMjIlM0ElMjJjb3N0JTIyJTdEJTJDJTIycGVyX2ttX2Nvc3QlMjIlM0ElN0IlMjJmcm9tJTIyJTNBJTIyY29zdCUyMiU3RCUyQyUyMmZpeGVkX2Nvc3QlMjIlM0ElN0IlMjJmcm9tJTIyJTNBJTIyY29zdCUyMiU3RCU3RCU3RA==
